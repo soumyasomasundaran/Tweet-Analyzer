@@ -1,4 +1,3 @@
-import streamlit as st
 CONSUMER_KEY = "2ewwd6d05QylyF2H1r9ADh376"
 
 CONSUMER_SECRET = "7EkWFsH9BWP4GJiEEwtoAXUMbZUcQdxJbJDUht8hGqlWaunzNv"
