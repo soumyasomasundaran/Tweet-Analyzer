@@ -3,12 +3,12 @@ import pandas as pd
 from keyterms_extraction import keyterm_extraction
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
-import login_copy
+import login
 from tweet_analyzer import config
 import tweepy 
 
 if 'login' not in st.session_state:
-     st.session_state['login']=False
+     st.session_state['login']= True
 
 def ta_main():
     if "submit" not in st.session_state:
