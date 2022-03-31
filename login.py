@@ -1,22 +1,22 @@
-#!/usr/bin/env python
-
+import tweepy 
 from tweet_analyzer import config
-import webbrowser
-import streamlit as st
 
-# From your app settings page
-def set_tokens(auth):
-    auth.get_access_token()
-    access_token = auth.access_token
-    access_token_secret = auth.access_token_secret
-    config.ACCESS_TOKEN = access_token
-    config.ACCESS_TOKEN_SECRET = access_token_secret
+def authrize():
+    """3 legged OAuth to be completed"""
+    CONSUMER_KEY = config.CONSUMER_KEY
+    CONSUMER_SECRET = config.CONSUMER_SECRET
 
+    BEARER_TOKEN = config.BEARER_TOKEN
 
-def login(auth):
-    with st.empty():    
-        url = auth.get_authorization_url()
-        webbrowser.open(url)
-        set_tokens(auth)
-        #return st.session_state['verifier']
+    auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET,callback="oob")
+
+    print(auth.get_authorization_url())
+
+    verifier = input("Input PIN: ")
+    ACCESS_TOKEN, ACCESS_TOKEN_SECRET = auth.get_access_token(verifier)
+    auth.set_access_token(ACCESS_TOKEN,ACCESS_TOKEN_SECRET)
+    print(ACCESS_TOKEN,"******",ACCESS_TOKEN_SECRET)
+    config.ACCESS_TOKEN = ACCESS_TOKEN
+    config.ACCESS_TOKEN_SECRET = ACCESS_TOKEN_SECRET
+    return True
 

@@ -6,10 +6,7 @@ from collections import Counter
 
 def get_client():
     client = tweepy.Client(bearer_token=config.BEARER_TOKEN,
-                           consumer_key=config.CONSUMER_KEY,
-                           consumer_secret=config.CONSUMER_SECRET,
-                           access_token=config.ACCESS_TOKEN,
-                           access_token_secret=config.ACCESS_TOKEN_SECRET, wait_on_rate_limit=True)
+                            wait_on_rate_limit=True)
     return client
 
 
@@ -42,7 +39,6 @@ def top_10_hashtags(hash_tag_list):
 
 def pagination(user_id):
     responses = tweepy.Paginator(client.get_users_tweets, user_id,
-                                 exclude='replies,retweets',
                                  max_results=100,
                                  expansions='referenced_tweets.id',
                                  tweet_fields=['created_at', 'public_metrics', 'entities'])
@@ -78,6 +74,7 @@ def get_lists_owned(user_id):
 
 
 def get_lists_followed(user_id):
+    """returns lists followed by a user and follower_count of each list  as dataframe"""
     followed_list_dictionary = {}
     followed_list_response = client.get_followed_lists(user_id, expansions="owner_id", list_fields=["follower_count"])
     if followed_list_response.data is not None:
@@ -88,6 +85,8 @@ def get_lists_followed(user_id):
         return False
 
 def get_lists_membership(user_id):
+    """returns lists a user is a member of and follower_count of each list as dataframe"""
+
     membership_list_dictionary = {}
     membership_list_response = client.get_list_memberships(user_id, expansions="owner_id", list_fields=["follower_count"])
     if membership_list_response.data is not None:
@@ -99,6 +98,7 @@ def get_lists_membership(user_id):
 
 
 def user_details(username):
+    """returns public metrics of a user as a dictionary"""
     user = {}
     user_response = client.get_user(username=username, user_fields=['public_metrics', 'description', 'url'])
     user_metrics = user_response.data['public_metrics']

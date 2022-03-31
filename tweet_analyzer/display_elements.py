@@ -12,12 +12,12 @@ def display_user_profile(user, c1):
 
 
 def display_user_lists(followed, owned, memberof, col1, col2, col3):
-    list_followed_container = col1.expander("List Followed")
-    list_owned_container = col2.expander("List Owned")
-    list_membership_container = col3.expander("List Membership")
+    list_followed_container = col1.container()
+    list_owned_container = col2.container()
+    list_membership_container = col3.container()
     with col1:
         if followed:
-            list_followed_container.header("Lists Followed")
+            list_followed_container.header("Lists Followed:"+str(len(followed)))
             list_followed_df = pd.DataFrame(list(followed.items()), columns=["ListName", "Followers Count"])
             sorted_df = (list_followed_df.sort_values(by=["Followers Count"],
                                                       ascending=False, ignore_index=True))
@@ -27,7 +27,7 @@ def display_user_lists(followed, owned, memberof, col1, col2, col3):
             list_followed_container.header("No lists Followed")
     with col2:
         if owned:
-            list_owned_container.header("Lists Owned")
+            list_owned_container.header("Lists Owned:"+str(len(owned)))
             list_owned_df = pd.DataFrame(list(owned.items()), columns=["List Name", "Followers Count"])
             list_owned_container.dataframe(list_owned_df.sort_values(by=["Followers Count"],
                                                                      ascending=False, ignore_index=True))
@@ -36,7 +36,7 @@ def display_user_lists(followed, owned, memberof, col1, col2, col3):
 
     with col3:
         if memberof:
-            list_membership_container.header("Lists Membership")
+            list_membership_container.header("Lists Membership:"+str(len(memberof)))
             list_membership_df = pd.DataFrame(list(memberof.items()), columns=["List Name", "Followers Count"])
             list_membership_container.dataframe(list_membership_df.sort_values(by=["Followers Count"],
                                                                      ascending=False, ignore_index=True))
@@ -49,7 +49,7 @@ def custom_wrap(s, width=30):
 
 
 def display_days_selector(c2):
-    days_dic = {"Today":1, "Last 7 Days":7," Last 30 Days":30,"Last 90 Days":90,"Last 12 months":365, }
+    days_dic = {"Last 30 Days":30, "Today":1, "Last 7 Days":7,"Last 90 Days":90,"Last 12 months":365, }
     days = c2.selectbox("Select Period", days_dic.keys()) 
     time_period = days_dic[days]    
     return time_period

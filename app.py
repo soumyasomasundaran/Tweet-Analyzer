@@ -1,14 +1,12 @@
 import streamlit as st
-import pandas as pd
-from keyterms_extraction import keyterm_extraction
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
-import login
-from tweet_analyzer import config
-import tweepy 
+
+st.set_page_config(page_title="Tweet Analyzer", page_icon=None, layout="wide")
 
 if 'login' not in st.session_state:
-     st.session_state['login']= True
+     st.session_state['login']= False
+
 
 def ta_main():
     if "submit" not in st.session_state:
@@ -56,34 +54,28 @@ def ta_main():
 
 
             display.draw_divider()
+            if not tweets.empty:
 
-            #hashtags and piechart         
-            c9, c10 = st.columns((2, 2))
-            with c9:
-                st.header("Top Hashtags")
-                top_hashtags = ta.find_hashtags(user_id)
-                st.table(top_hashtags)
-        
-            # All Tweets
-
-            with c10:
-                st.header("Tweets")
-                tweet_container = st.container()
-                st.dataframe(tweets.loc[:, tweets.columns != 'Engagement'])
+                #hashtags and piechart         
+                c9, c10 = st.columns((2, 2))
+                with c9:
+                    st.header("Top Hashtags")
+                    top_hashtags = ta.find_hashtags(user_id)
+                    st.table(top_hashtags)
             
-            key_terms = keyterm_extraction(tweets)
-            st.table(key_terms)
+                # All Tweets
+                
+                with c10:
+                    st.header("Tweets")
+                    tweet_container = st.container()
+                    st.dataframe(tweets.loc[:, tweets.columns != 'Engagement'])
+                
+                   
+            else:
+                st.warning("No Tweets to display")
 
 
-if st.session_state['login' ] == True:
-    ta_main()
-else:
-    if st.button("Sign in"):
-        auth = tweepy.OAuthHandler(
-            config.CONSUMER_KEY, config.CONSUMER_SECRET,
-            callback="http://192.168.0.7:8501"
-            )  
-        logged_in = login_copy.login(auth)
-        if logged_in:
-            st.session_state['login'] = True
-    
+
+#OAuth part
+
+ta_main()
