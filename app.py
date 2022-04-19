@@ -1,7 +1,7 @@
 import streamlit as st
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
-
+import login
 st.set_page_config(page_title="Tweet Analyzer", page_icon=None, layout="wide")
 
 if 'login' not in st.session_state:
@@ -11,7 +11,6 @@ if 'login' not in st.session_state:
 def ta_main():
     if "submit" not in st.session_state:
         st.session_state['submit'] = False
-
 
     # Input Section
     st.header("Tweet Analyzer")
@@ -77,5 +76,15 @@ def ta_main():
 
 
 #OAuth part
+if st.session_state['login' ] == True:
+    ta_main() # main app 
+else:
+    if st.button("Sign in"):
+        logged_in = login.authrize()
+        if logged_in:
+            print("hi")
+            st.session_state['login'] = True
 
-ta_main()
+
+
+#ta_main()

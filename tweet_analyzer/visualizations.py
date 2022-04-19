@@ -12,8 +12,8 @@ def find_tweets_in_period(df,days):
     return df[mask]
 
 
-
 def find_engagement(original_tweets_df):
+    """Engagment of each tweet is calculated in dataframe"""
     original_tweets_df['Engagement'] = original_tweets_df['Favourites']*0.2 + original_tweets_df['Retweets']*0.8
     last_period_tweets = find_tweets_in_period(original_tweets_df,st.session_state['days'])[['Tweet','Engagement']]
     return last_period_tweets
