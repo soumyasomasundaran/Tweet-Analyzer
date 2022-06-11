@@ -29,10 +29,10 @@ def find_hashtags(user_id):
                         if key == 'hashtags':
                             for hashtag in value:
                                 hashtag_list.append(hashtag['tag'])
-    return pd.DataFrame(top_10_hashtags(hashtag_list), columns=['Hashtags', 'Count'])
+    return pd.DataFrame(find_top_10_hashtags(hashtag_list), columns=['Hashtags', 'Count'])
 
 
-def top_10_hashtags(hash_tag_list):
+def find_top_10_hashtags(hash_tag_list):
     if hash_tag_list:
         return Counter(hash_tag_list).most_common(10)
 
@@ -63,6 +63,8 @@ def get_original_tweets(user_id):
 
 
 def get_lists_owned(user_id):
+    """returns lists owned by a user and follower_count of each list  as dataframe"""
+    
     owned_list_dictionary = {}
     owned_list_response = client.get_owned_lists(user_id, expansions="owner_id", list_fields=["follower_count"])
     if owned_list_response.data is not None:

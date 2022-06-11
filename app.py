@@ -1,18 +1,41 @@
 import streamlit as st
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
-import login
 st.set_page_config(page_title="Tweet Analyzer", page_icon=None, layout="wide")
 
-if 'login' not in st.session_state:
-     st.session_state['login']= False
 
+if 'login' not in st.session_state:
+    st.session_state['login']= False
+
+def hide_menu():
+    """hide the default menu option"""
+    st.markdown(""" <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style> """, unsafe_allow_html=True)
+
+def remove_padding():
+    """To remove padding between elements"""
+    padding = 10
+    st.markdown(f""" <style>
+    .reportview-container .main .block-container{{
+        padding-top: {padding}rem;
+        padding-right: {padding}rem;
+        padding-left: {padding}rem;
+        padding-bottom: {padding}rem;
+    }} </style> """, unsafe_allow_html=True)
 
 def ta_main():
+    """main logic"""
     if "submit" not in st.session_state:
         st.session_state['submit'] = False
 
+
+
+
     # Input Section
+    #hide_menu()
+    remove_padding()
     st.header("Tweet Analyzer")
     username = st.text_input("Enter a Twitter handle name")
     submit_button = st.button('Submit')
@@ -24,10 +47,11 @@ def ta_main():
         with st.spinner('Reading Tweets.'):
             try:
                 user_id = ta.get_user_id(username)
-            except:
+            except KeyError:
                 st.error("User Not Found")
                 st.stop()
                 
+
             #fetch data
             user = ta.user_details(username)
             tweets = ta.get_original_tweets(user_id)
@@ -38,11 +62,12 @@ def ta_main():
 
             display.draw_divider()
 
+           
             #user profile and Engagment Chart
             c1, c2 = st.columns((1, 3))
             display.display_user_profile(user, c1)
             st.session_state['days'] = display.display_days_selector(c2)
-            display.draw_engagement_chart(tweets, c2)
+            display.display_engagement_chart(tweets, c2)
             
 
             display.draw_divider()
@@ -65,26 +90,19 @@ def ta_main():
                 # All Tweets
                 
                 with c10:
-                    st.header("Tweets")
-                    tweet_container = st.container()
-                    st.dataframe(tweets.loc[:, tweets.columns != 'Engagement'])
+                    st.header("Place Holder")
+                    st.area_chart([0,0])
+
+                st.header("Tweets")
+                st.dataframe(tweets.loc[:, tweets.columns != 'Engagement'])
                 
+                    
                    
             else:
                 st.warning("No Tweets to display")
 
 
 
-#OAuth part
-if st.session_state['login' ] == True:
-    ta_main() # main app 
-else:
-    if st.button("Sign in"):
-        logged_in = login.authrize()
-        if logged_in:
-            print("hi")
-            st.session_state['login'] = True
 
 
-
-#ta_main()
+ta_main()
