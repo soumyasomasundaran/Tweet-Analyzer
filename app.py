@@ -1,11 +1,10 @@
 import streamlit as st
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
+
+
+
 st.set_page_config(page_title="Tweet Analyzer", page_icon=None, layout="wide")
-
-
-if 'login' not in st.session_state:
-    st.session_state['login']= False
 
 def hide_menu():
     """hide the default menu option"""
@@ -13,6 +12,7 @@ def hide_menu():
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style> """, unsafe_allow_html=True)
+
 
 def remove_padding():
     """To remove padding between elements"""
@@ -25,19 +25,16 @@ def remove_padding():
         padding-bottom: {padding}rem;
     }} </style> """, unsafe_allow_html=True)
 
+
 def ta_main():
     """main logic"""
     if "submit" not in st.session_state:
         st.session_state['submit'] = False
 
-
-
-
-    # Input Section
     #hide_menu()
     remove_padding()
     st.header("Tweet Analyzer")
-    username = st.text_input("Enter a Twitter handle name")
+    username = st.text_input("Enter a Twitter handle name").lower().replace("@","")     
     submit_button = st.button('Submit')
     if submit_button or st.session_state['submit']:
         st.session_state['submit'] = True 
@@ -45,9 +42,8 @@ def ta_main():
             st.warning("Please give an input")
             st.stop()
         with st.spinner('Reading Tweets.'):
-            try:
-                user_id = ta.get_user_id(username)
-            except KeyError:
+            user_id = ta.get_user_id(username)
+            if not user_id:
                 st.error("User Not Found")
                 st.stop()
                 
@@ -93,9 +89,17 @@ def ta_main():
                     st.header("Place Holder")
                     st.area_chart([0,0])
 
+
                 st.header("Tweets")
-                st.dataframe(tweets.loc[:, tweets.columns != 'Engagement'])
-                
+                tweets_df = tweets.loc[:,tweets.columns != 'Engagement']
+                st.dataframe(tweets_df)
+
+                @st.cache
+                def convert_df(df):
+                    return df.to_csv().encode('utf-8')
+
+                csv = convert_df(tweets_df)
+                st.download_button( "Download CSV",data = csv,file_name = f"{username}_tweets.csv",mime="text/plain",key='download-csv')             
                     
                    
             else:

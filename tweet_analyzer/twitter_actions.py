@@ -1,7 +1,9 @@
+from collections import Counter
+from http.client import BAD_REQUEST
+from traceback import print_tb
 import tweepy
 from . import config
 import pandas as pd
-from collections import Counter
 
 
 def get_client():
@@ -11,16 +13,20 @@ def get_client():
 
 
 def get_user_id(username):
-    user = client.get_user(username=username)
-    return user.data.id
+    """returns user_id from username"""
+    try:
+        user = client.get_user(username=username)
+    except:
+        return False
+    if user.data:
+        return user.data.id
     
-
 
 def find_hashtags(user_id):
     hashtag_list = []
     responses = pagination(user_id)
     for response in responses:
-        if response.data ==None:
+        if response.data is None:
             continue
         else:
             for tweets in response.data:
@@ -38,6 +44,7 @@ def find_top_10_hashtags(hash_tag_list):
 
 
 def pagination(user_id):
+    """get paginated reponse from Twitter"""
     responses = tweepy.Paginator(client.get_users_tweets, user_id,
                                  max_results=100,
                                  expansions='referenced_tweets.id',
@@ -58,8 +65,8 @@ def get_original_tweets(user_id):
                                 tweets['public_metrics']['retweet_count'],
                                 tweets['created_at'].date()])
 
-    df = pd.DataFrame(tweet_list, columns=["Tweet", "Favourites", "Retweets", "Created"])
-    return df
+    tweets_dataframe = pd.DataFrame(tweet_list, columns=["Tweet", "Favourites", "Retweets", "Created"])
+    return tweets_dataframe
 
 
 def get_lists_owned(user_id):
