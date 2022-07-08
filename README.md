@@ -11,7 +11,8 @@ Dashboard built in streamlit that creates a visualization for a Twitter handle. 
 
 
 ## 🖥️ Demo
-[See the Demo here](https://share.streamlit.io/soumyas567/tweet-analyzer/main/app.py)
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/soumyas567/tweet-analyzer/main/app.py)
 
 
 ##  Contribution
