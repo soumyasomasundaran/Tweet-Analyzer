@@ -1,38 +1,17 @@
 import streamlit as st
 from tweet_analyzer import twitter_actions as ta
 from tweet_analyzer import display_elements as display
+from tweet_analyzer import style
 
 
 
-st.set_page_config(page_title="Tweet Analyzer", page_icon=None, layout="wide")
-
-def hide_menu():
-    """hide the default menu option"""
-    st.markdown(""" <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style> """, unsafe_allow_html=True)
-
-
-def remove_padding():
-    """To remove padding between elements"""
-    padding = 10
-    st.markdown(f""" <style>
-    .reportview-container .main .block-container{{
-        padding-top: {padding}rem;
-        padding-right: {padding}rem;
-        padding-left: {padding}rem;
-        padding-bottom: {padding}rem;
-    }} </style> """, unsafe_allow_html=True)
-
-
-def ta_main():
+def main():
     """main logic"""
     if "submit" not in st.session_state:
         st.session_state['submit'] = False
 
-    #hide_menu()
-    remove_padding()
+    style.remove_padding()
+    style.hide_menu()
     st.header("Tweet Analyzer")
     username = st.text_input("Enter a Twitter handle name").lower().replace("@","")     
     submit_button = st.button('Submit')
@@ -74,32 +53,27 @@ def ta_main():
 
 
             display.draw_divider()
-            if not tweets.empty:
-
-                #hashtags and piechart         
-                c9, c10 = st.columns((2, 2))
-                with c9:
+            if not tweets.empty:         
+                col9, col10 = st.columns((2, 2))
+                with col9:
                     st.header("Top Hashtags")
                     top_hashtags = ta.find_hashtags(user_id)
                     st.table(top_hashtags)
             
                 # All Tweets
                 
-                with c10:
-                    st.header("Place Holder")
-                    st.area_chart([0,0])
+                with col10:
+                    st.header("Tweets")
+                    tweets_df = tweets.loc[:,tweets.columns != 'Engagement']
+                    st.dataframe(tweets_df)
+                    @st.cache
+                    def convert_df(df):
+                        return df.to_csv().encode('utf-8')
+                    csv = convert_df(tweets_df)
+                    
+                    
+                    st.download_button( "Download CSV",data = csv,file_name = f"{username}_tweets.csv",mime="text/plain",key='download-csv')             
 
-
-                st.header("Tweets")
-                tweets_df = tweets.loc[:,tweets.columns != 'Engagement']
-                st.dataframe(tweets_df)
-
-                @st.cache
-                def convert_df(df):
-                    return df.to_csv().encode('utf-8')
-
-                csv = convert_df(tweets_df)
-                st.download_button( "Download CSV",data = csv,file_name = f"{username}_tweets.csv",mime="text/plain",key='download-csv')             
                     
                    
             else:
@@ -108,5 +82,7 @@ def ta_main():
 
 
 
+if __name__ =='__main__':
 
-ta_main()
+    main()
+    

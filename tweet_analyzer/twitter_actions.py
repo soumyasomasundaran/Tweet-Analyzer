@@ -56,7 +56,7 @@ def get_original_tweets(user_id):
     tweet_list = []
     responses = pagination(user_id)
     for response in responses:
-        if response.data ==None:
+        if response.data == None:
             continue
         else:
             for tweets in response.data:
